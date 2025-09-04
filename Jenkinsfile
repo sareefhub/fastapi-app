@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/<username>/<repo>.git'
+                git branch: 'main', url: 'https://github.com/sareefhub/fastapi-app.git'
             }
         }
         stage('Install Dependencies') {
