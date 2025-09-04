@@ -42,10 +42,13 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        . venv/bin/activate
-                        sonar-scanner -Dsonar.login=$SONARQUBE
-                    '''
+                    script {
+                        def scannerHome = tool 'sonar-scanner'
+                        sh """
+                            . venv/bin/activate
+                            ${scannerHome}/bin/sonar-scanner -Dsonar.login=$SONARQUBE
+                        """
+                    }
                 }
             }
         }
