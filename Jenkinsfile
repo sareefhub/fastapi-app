@@ -24,7 +24,7 @@ pipeline {
                     . venv/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
-                    pip install pytest coverage
+                    pip install pytest coverage pytest-cov
                 '''
             }
         }
@@ -41,8 +41,10 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    // ใช้ sonar-scanner ที่ Jenkins ติดตั้ง ไม่ใช่ pip
-                    sh 'sonar-scanner -Dsonar.login=$SONARQUBE'
+                    sh '''
+                        . venv/bin/activate
+                        sonar-scanner -Dsonar.login=$SONARQUBE
+                    '''
                 }
             }
         }
