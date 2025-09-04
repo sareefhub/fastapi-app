@@ -19,22 +19,32 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install --upgrade pip'
-                sh 'pip install -r requirements.txt'
-                sh 'pip install pytest coverage sonar-scanner'
+                sh '''
+                    python -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                    pip install pytest coverage sonar-scanner
+                '''
             }
         }
 
         stage('Run Tests & Coverage') {
             steps {
-                sh 'pytest --cov=app tests/ --cov-report=xml'
+                sh '''
+                    . venv/bin/activate
+                    pytest --cov=app tests/ --cov-report=xml
+                '''
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner -Dsonar.login=$SONARQUBE'
+                    sh '''
+                        . venv/bin/activate
+                        sonar-scanner -Dsonar.login=$SONARQUBE
+                    '''
                 }
             }
         }
