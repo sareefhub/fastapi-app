@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.11'
+            image 'python-java:3.11'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
@@ -45,7 +45,6 @@ pipeline {
                     script {
                         def scannerHome = tool 'sonar-scanner'
                         sh """
-                            apt-get update && apt-get install -y openjdk-17-jdk-headless
                             . venv/bin/activate && \
                             ${scannerHome}/bin/sonar-scanner \
                               -Dsonar.projectKey=fastapi-app \
