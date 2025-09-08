@@ -56,7 +56,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t fastapi-app:latest .'
+                sh 'DOCKER_CONFIG=$WORKSPACE/.docker docker build -t fastapi-app:latest .'
             }
         }
 
