@@ -28,8 +28,8 @@ pipeline {
         stage('Run Tests & Coverage') {
             steps {
                 sh '''
-                    . venv/bin/activate && \
-                    export PYTHONPATH=. && \
+                    . venv/bin/activate
+                    export PYTHONPATH=.
                     pytest --cov=app tests/ --cov-report=xml
                 '''
             }
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh '''
-                        . venv/bin/activate && \
+                        . venv/bin/activate
                         /opt/sonar-scanner/bin/sonar-scanner \
                           -Dsonar.projectKey=fastapi-clean-demo \
                           -Dsonar.projectName="FastAPI Clean Demo" \
@@ -48,7 +48,7 @@ pipeline {
                           -Dsonar.python.coverage.reportPaths=coverage.xml \
                           -Dsonar.exclusions=**/tests/**,**/__pycache__/**,**/*.pyc,venv/** \
                           -Dsonar.sourceEncoding=UTF-8 \
-                          -Dsonar.host.url=$SONAR_HOST_URL \
+                          -Dsonar.host.url=http://sonarqube:9000 \
                           -Dsonar.login=$SONARQUBE
                     '''
                 }
