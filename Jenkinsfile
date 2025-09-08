@@ -44,10 +44,11 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     script {
                         def scannerHome = tool 'sonar-scanner'
-                        sh """
-                            . venv/bin/activate
-                            ${scannerHome}/bin/sonar-scanner -Dsonar.login=$SONARQUBE
-                        """
+                        sh '''
+                            . venv/bin/activate && \
+                            ${scannerHome}/bin/sonar-scanner \
+                              -Dsonar.login=$SONARQUBE
+                        '''
                     }
                 }
             }
