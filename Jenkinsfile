@@ -45,6 +45,7 @@ pipeline {
                     script {
                         def scannerHome = tool 'sonar-scanner'
                         sh """
+                            apt-get update && apt-get install -y openjdk-17-jdk-headless
                             . venv/bin/activate && \
                             ${scannerHome}/bin/sonar-scanner \
                               -Dsonar.projectKey=fastapi-app \
