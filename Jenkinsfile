@@ -1,18 +1,19 @@
 pipeline {
     agent {
         docker {
-            image 'python-java:3.11'
+            image 'python:3.11'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
-
+    environment {
+        SONARQUBE = credentials('sonarqube_token')
+    }
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/sareefhub/fastapi-app.git'
             }
         }
-
         stage('Install Dependencies') {
             steps {
                 sh '''
@@ -24,7 +25,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Run Tests & Coverage') {
             steps {
                 sh '''
@@ -34,39 +34,44 @@ pipeline {
                 '''
             }
         }
-
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    script {
-                        def scannerHome = tool 'sonar-scanner'
-                        sh """
-                            . venv/bin/activate && \
-                            ${scannerHome}/bin/sonar-scanner \
-                              -Dsonar.projectKey=fastapi-app \
-                              -Dsonar.sources=. \
-                              -Dsonar.host.url=$SONAR_HOST_URL \
-                              -Dsonar.login=$SONAR_AUTH_TOKEN \
-                              -Dsonar.userHome=$WORKSPACE/.sonar
-                        """
-                    }
+                    sh '''
+                        . venv/bin/activate
+                        /opt/sonar-scanner/bin/sonar-scanner \
+                          -Dsonar.projectKey=fastapi-clean-demo \
+                          -Dsonar.projectName="FastAPI Clean Demo" \
+                          -Dsonar.projectVersion=1.0 \
+                          -Dsonar.sources=app \
+                          -Dsonar.tests=tests \
+                          -Dsonar.python.coverage.reportPaths=coverage.xml \
+                          -Dsonar.exclusions=**/tests/**,**/__pycache__/**,**/*.pyc,venv/** \
+                          -Dsonar.sourceEncoding=UTF-8 \
+                          -Dsonar.host.url=$SONAR_HOST_URL \
+                          -Dsonar.login=$SONARQUBE
+                    '''
                 }
             }
         }
-
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 30, unit: 'SECONDS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 sh 'DOCKER_CONFIG=$WORKSPACE/.docker docker build -t fastapi-app:latest .'
             }
         }
-
         stage('Deploy Container') {
             steps {
                 sh 'docker run -d -p 8000:8000 fastapi-app:latest'
             }
         }
     }
-
     post {
         always {
             echo "Pipeline finished"
