@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.11'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -v /opt/sonar-scanner:/opt/sonar-scanner -v /usr/local/bin/sonar-scanner:/usr/local/bin/sonar-scanner'
         }
     }
     environment {
@@ -34,12 +34,16 @@ pipeline {
                 '''
             }
         }
+        stage('Check Sonar Scanner') {
+            steps {
+                sh 'sonar-scanner -v'
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh '''
-                        . venv/bin/activate
-                        /opt/sonar-scanner/bin/sonar-scanner \
+                        sonar-scanner \
                           -Dsonar.projectKey=fastapi-clean-demo \
                           -Dsonar.projectName="FastAPI Clean Demo" \
                           -Dsonar.projectVersion=1.0 \
