@@ -41,14 +41,14 @@ pipeline {
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONARQUBE')]) {
                         script {
                             def scannerHome = tool 'sonar-scanner'
-                            sh """
+                            sh '''
                                 . venv/bin/activate && \
                                 ${scannerHome}/bin/sonar-scanner \
                                   -Dsonar.projectKey=fastapi-app \
                                   -Dsonar.sources=. \
                                   -Dsonar.host.url=http://sonarqube:9000 \
                                   -Dsonar.login=$SONARQUBE
-                            """
+                            '''
                         }
                     }
                 }
