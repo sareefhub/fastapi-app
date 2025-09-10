@@ -72,13 +72,18 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
+      agent {
+        docker {
+          image 'sonarsource/sonar-scanner-cli:latest'
+        }
+      }
       steps {
         withSonarQubeEnv('SonarQube') {
           withCredentials([string(credentialsId: 'FastApi', variable: 'SONAR_TOKEN')]) {
             sh '''
-              set -eux
               sonar-scanner \
-                -Dsonar.host.url=$SONAR_HOST_URL
+                -Dsonar.host.url=$SONAR_HOST_URL \
+                -Dsonar.token=$SONAR_TOKEN
             '''
           }
         }
