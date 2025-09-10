@@ -75,20 +75,21 @@ pipeline {
       steps {
         withSonarQubeEnv('SonarQube') {
           withCredentials([string(credentialsId: 'FastApi', variable: 'SONAR_TOKEN')]) {
-            sh '''
-              set -eux
-              export PATH=$PATH:$(echo $(which sonar-scanner) | sed 's#/bin/sonar-scanner##')
-              sonar-scanner \
-                -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.token=$SONAR_TOKEN \
-                -Dsonar.projectKey=fastapi-clean-demo \
-                -Dsonar.projectName="FastAPI Clean Demo" \
-                -Dsonar.sources=app \
-                -Dsonar.tests=tests \
-                -Dsonar.python.version=3.11 \
-                -Dsonar.python.coverage.reportPaths=coverage.xml \
-                -Dsonar.sourceEncoding=UTF-8
-            '''
+            script {
+              def scannerHome = tool 'sonar-scanner'
+              sh """
+                ${scannerHome}/bin/sonar-scanner \
+                  -Dsonar.host.url=$SONAR_HOST_URL \
+                  -Dsonar.token=$SONAR_TOKEN \
+                  -Dsonar.projectKey=fastapi-clean-demo \
+                  -Dsonar.projectName="FastAPI Clean Demo" \
+                  -Dsonar.sources=app \
+                  -Dsonar.tests=tests \
+                  -Dsonar.python.version=3.11 \
+                  -Dsonar.python.coverage.reportPaths=coverage.xml \
+                  -Dsonar.sourceEncoding=UTF-8
+              """
+            }
           }
         }
       }
