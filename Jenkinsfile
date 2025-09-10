@@ -78,8 +78,7 @@ pipeline {
             sh '''
               set -eux
               sonar-scanner \
-                -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_TOKEN
+                -Dsonar.host.url=$SONAR_HOST_URL
             '''
           }
         }
