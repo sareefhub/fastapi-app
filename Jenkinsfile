@@ -79,14 +79,7 @@ pipeline {
               set -eux
               sonar-scanner \
                 -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_TOKEN \
-                -Dsonar.projectKey=TestFastApi \
-                -Dsonar.projectName=TestFastApi \
-                -Dsonar.sources=app \
-                -Dsonar.tests=tests \
-                -Dsonar.python.version=3.11 \
-                -Dsonar.python.coverage.reportPaths=coverage.xml \
-                -Dsonar.sourceEncoding=UTF-8
+                -Dsonar.login=$SONAR_TOKEN
             '''
           }
         }
