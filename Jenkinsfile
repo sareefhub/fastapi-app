@@ -124,6 +124,22 @@ pipeline {
       }
     }
 
+    stage('Push to Registry') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'dockerhub-cred',
+          usernameVariable: 'DOCKER_USER',
+          passwordVariable: 'DOCKER_PASS'
+        )]) {
+          sh '''
+          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+          docker tag fastapi-app:latest $DOCKER_USER/6510110115-fastapi-app:latest
+          docker push $DOCKER_USER/6510110115-fastapi-app:latest
+          '''
+        }
+      }
+    }
+
     stage('Deploy Container') {
       steps {
         sh '''
